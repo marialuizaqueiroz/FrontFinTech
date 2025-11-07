@@ -14,13 +14,14 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
-      setError(null)
       try {
         const data = await financingAPI.list()
         setItems(data)
-      } catch (err: any) {
-        console.error('Error fetching financings:', err)
-        setError(err.response?.data?.message || 'Erro ao carregar dados')
+      } catch (error: any) {
+        console.error('Erro ao carregar financiamentos:', error)
+        if (error.code === 'ERR_NETWORK' || error.message?.includes('Network Error')) {
+          alert(`❌ Não foi possível conectar à API em ${import.meta.env.VITE_API_URL || 'http://localhost:3001'}\n\nVerifique se:\n1. O backend está rodando\n2. A URL está correta no arquivo .env\n3. CORS está configurado no backend`)
+        }
       } finally {
         setLoading(false)
       }

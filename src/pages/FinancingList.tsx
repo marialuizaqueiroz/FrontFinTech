@@ -15,14 +15,19 @@ export default function FinancingList(){
   useEffect(()=>{
     const fetchData = async () =>{
       setLoading(true)
-      setError(null)
       try {
         const data = await financingAPI.list()
         setItems(data)
         setFilteredItems(data)
-      } catch (err: any) {
-        console.error('Error fetching financings:', err)
-        setError(err.response?.data?.message || 'Erro ao carregar financiamentos')
+        setError(null)
+      } catch (error: any) {
+        console.error('Erro ao carregar financiamentos:', error)
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+        if (error.code === 'ERR_NETWORK' || error.message?.includes('Network Error')) {
+          setError(`Não foi possível conectar à API em ${apiUrl}. Verifique se o backend está rodando.`)
+        } else {
+          setError(`Erro ao carregar dados: ${error.message}`)
+        }
       } finally {
         setLoading(false)
       }
@@ -230,6 +235,25 @@ export default function FinancingList(){
               >
                 Limpar Filtros
               </button>
+            </div>
+            <div>
+              <Link
+                to="/financiamentos/novo"
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#10b981',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontWeight: '500',
+                  fontSize: '14px',
+                  textDecoration: 'none',
+                  display: 'inline-block'
+                }}
+              >
+                ➕ Novo Financiamento
+              </Link>
             </div>
           </div>
         </div>

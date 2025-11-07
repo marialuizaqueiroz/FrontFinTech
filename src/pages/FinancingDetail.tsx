@@ -20,19 +20,16 @@ export default function FinancingDetail(){
 
   useEffect(()=>{
     const fetchData = async () =>{
-      if (!id) return
       setLoading(true)
-      setError(null)
       try {
-        const data = await financingAPI.get(id)
+        const data = await financingAPI.get(id!)
         setItem(data)
         setCustomer(data.customer)
         setAmount(data.amount)
         setStatus(data.status)
         setTermMonths(data.termMonths)
-      } catch (err: any) {
-        console.error('Error fetching financing:', err)
-        setError(err.response?.data?.message || 'Erro ao carregar financiamento')
+      } catch (error) {
+        console.error('Erro ao carregar financiamento:', error)
       } finally {
         setLoading(false)
       }
@@ -40,12 +37,11 @@ export default function FinancingDetail(){
     fetchData()
   },[id])
 
-  const save = async () => {
-    if (!item || !id) return
+    const save = async () => {
+    if (!item) return
     setSaving(true)
-    setError(null)
     try {
-      const updatedData = await financingAPI.update(id, {
+      const updatedData = await financingAPI.update(item.id, {
         customer,
         amount,
         status,
@@ -53,9 +49,8 @@ export default function FinancingDetail(){
       })
       setItem(updatedData)
       alert('✅ Dados atualizados com sucesso!')
-    } catch (err: any) {
-      console.error('Error updating financing:', err)
-      setError(err.response?.data?.message || 'Erro ao atualizar financiamento')
+    } catch (error) {
+      console.error('Erro ao salvar:', error)
       alert('❌ Erro ao salvar alterações')
     } finally {
       setSaving(false)
