@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { authAPI } from '../services/api'
 
 type User = { id: string; name: string; role: 'admin' | 'client' }
 
@@ -28,15 +29,18 @@ export const AuthProvider: React.FC<{children:React.ReactNode}> = ({ children })
   }, [token])
 
   const login = async (username:string, password:string) => {
-    const res = await fetch('/auth/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ username, password }) })
-    if (!res.ok) throw new Error('Erro no login')
-    const data = await res.json()
-    setToken(data.token)
-    setUser(data.user)
-    localStorage.setItem('token', data.token)
-    localStorage.setItem('user', JSON.stringify(data.user))
-    if (data.user.role === 'admin') navigate('/dashboard')
-    else navigate('/')
+    try {
+      const data = await authAPI.login(username, password)
+      setToken(data.token)
+      setUser(data.user)
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('user', JSON.stringify(data.user))
+      if (data.user.role === 'admin') navigate('/dashboard')
+      else navigate('/')
+    } catch (error) {
+      console.error('Login error:', error)
+      throw new Error('Erro no login')
+    }
   }
 
   const logout = () => {

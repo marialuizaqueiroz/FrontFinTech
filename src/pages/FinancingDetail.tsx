@@ -1,64 +1,65 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-
-type Financing = { id:string; customer:string; amount:number; status:string; termMonths:number; createdAt:string }
+import { financingAPI, Financing } from '../services/api'
 
 export default function FinancingDetail(){
   const { id } = useParams()
   const navigate = useNavigate()
-  const { token, logout, user } = useAuth()
+  const { logout, user } = useAuth()
   const [item, setItem] = useState<Financing | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   
   // Estados editáveis
   const [customer, setCustomer] = useState('')
   const [amount, setAmount] = useState(0)
-  const [status, setStatus] = useState('')
+  const [status, setStatus] = useState<'pending' | 'approved' | 'signed' | 'rejected'>('pending')
   const [termMonths, setTermMonths] = useState(0)
 
   useEffect(()=>{
     const fetchData = async () =>{
+      if (!id) return
       setLoading(true)
-      const res = await fetch(`/financings/${id}`, { headers: { Authorization: token ? `Bearer ${token}` : '' } })
-      if (res.status === 401) { logout(); return }
-      if (!res.ok) return
-      const data = await res.json()
-      setItem(data)
-      setCustomer(data.customer)
-      setAmount(data.amount)
-      setStatus(data.status)
-      setTermMonths(data.termMonths)
-      setLoading(false)
+      setError(null)
+      try {
+        const data = await financingAPI.get(id)
+        setItem(data)
+        setCustomer(data.customer)
+        setAmount(data.amount)
+        setStatus(data.status)
+        setTermMonths(data.termMonths)
+      } catch (err: any) {
+        console.error('Error fetching financing:', err)
+        setError(err.response?.data?.message || 'Erro ao carregar financiamento')
+      } finally {
+        setLoading(false)
+      }
     }
     fetchData()
   },[id])
 
   const save = async () => {
-    if (!item) return
+    if (!item || !id) return
     setSaving(true)
-    const updatedData = {
-      ...item,
-      customer,
-      amount,
-      status,
-      termMonths
-    }
-    const res = await fetch(`/financings/${item.id}`, { 
-      method: 'PUT', 
-      headers: { 
-        'Content-Type':'application/json', 
-        Authorization: token ? `Bearer ${token}` : '' 
-      }, 
-      body: JSON.stringify(updatedData) 
-    })
-    if (res.status === 401) { logout(); return }
-    if (res.ok) {
+    setError(null)
+    try {
+      const updatedData = await financingAPI.update(id, {
+        customer,
+        amount,
+        status,
+        termMonths
+      })
       setItem(updatedData)
       alert('✅ Dados atualizados com sucesso!')
+    } catch (err: any) {
+      console.error('Error updating financing:', err)
+      setError(err.response?.data?.message || 'Erro ao atualizar financiamento')
+      alert('❌ Erro ao salvar alterações')
+    } finally {
+      setSaving(false)
     }
-    setSaving(false)
   }
 
   const hasChanges = () => {
@@ -67,6 +68,22 @@ export default function FinancingDetail(){
            amount !== item.amount || 
            status !== item.status || 
            termMonths !== item.termMonths
+  }
+
+  const handleDelete = async () => {
+    if (!id || !item) return
+    
+    const confirmDelete = window.confirm(`Tem certeza que deseja excluir o financiamento de ${item.customer}?`)
+    if (!confirmDelete) return
+
+    try {
+      await financingAPI.delete(id)
+      alert('✅ Financiamento excluído com sucesso!')
+      navigate('/financiamentos')
+    } catch (err: any) {
+      console.error('Error deleting financing:', err)
+      alert('❌ Erro ao excluir financiamento')
+    }
   }
 
   const getStatusColor = (s: string) => {
@@ -350,7 +367,7 @@ export default function FinancingDetail(){
               <h3 style={{margin: '0 0 16px', fontSize: '16px', fontWeight: '600', color: '#111827'}}>
                 ⚙️ Status do Financiamento
               </h3>
-              <div style={{display: 'flex', gap: '12px', alignItems: 'end'}}>
+              <div style={{display: 'flex', gap: '12px', alignItems: 'end', marginBottom: '16px'}}>
                 <div style={{flex: 1}}>
                   <label style={{
                     display: 'block',
@@ -363,7 +380,7 @@ export default function FinancingDetail(){
                   </label>
                   <select
                     value={status}
-                    onChange={e=>setStatus(e.target.value)}
+                    onChange={e=>setStatus(e.target.value as 'pending' | 'approved' | 'signed' | 'rejected')}
                     style={{
                       width: '100%',
                       padding: '12px',
@@ -400,6 +417,27 @@ export default function FinancingDetail(){
                   {saving ? '💾 Salvando...' : '💾 Salvar Todas as Alterações'}
                 </button>
               </div>
+              
+              {/* Botão Deletar */}
+              <div style={{ paddingTop: '16px', borderTop: '1px solid #e5e7eb' }}>
+                <button
+                  onClick={handleDelete}
+                  style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  🗑️ Excluir Financiamento
+                </button>
+              </div>
+
               {hasChanges() && (
                 <div style={{
                   marginTop: '12px',

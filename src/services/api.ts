@@ -1,55 +1,105 @@
 // src/services/api.ts
+import axios from 'axios'
 import { API_URL } from '../config/api'
 
-// Helper para fazer requests
-async function fetchAPI(endpoint: string, options: RequestInit = {}) {
-  const url = `${API_URL}${endpoint}`
-  
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  })
+// Configuração do axios
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`)
+// Interceptor para adicionar token em todas as requisições
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
   }
+  return config
+})
 
-  return response.json()
+// Interceptor para tratar erros
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token inválido ou expirado
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+
+// Tipos
+export interface Financing {
+  id: string
+  customer: string
+  amount: number
+  status: 'pending' | 'approved' | 'signed' | 'rejected'
+  termMonths: number
+  createdAt: string
 }
 
-// Auth
+export interface CreateFinancingDTO {
+  customer: string
+  amount: number
+  status: 'pending' | 'approved' | 'signed' | 'rejected'
+  termMonths: number
+}
+
+export interface UpdateFinancingDTO {
+  customer?: string
+  amount?: number
+  status?: 'pending' | 'approved' | 'signed' | 'rejected'
+  termMonths?: number
+}
+
+// Auth Service
 export const authAPI = {
-  login: (username: string, password: string) =>
-    fetchAPI('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ username, password }),
-    }),
+  login: async (username: string, password: string) => {
+    const response = await api.post('/auth/login', { username, password })
+    return response.data
+  },
 
-  me: (token: string) =>
-    fetchAPI('/auth/me', {
-      headers: { Authorization: `Bearer ${token}` },
-    }),
+  me: async () => {
+    const response = await api.get('/auth/me')
+    return response.data
+  },
 }
 
-// Financings
+// Financing Service
 export const financingAPI = {
-  list: (token: string) =>
-    fetchAPI('/financings', {
-      headers: { Authorization: `Bearer ${token}` },
-    }),
+  // Listar todos os financiamentos
+  list: async (): Promise<Financing[]> => {
+    const response = await api.get('/financings')
+    return response.data
+  },
 
-  get: (id: string, token: string) =>
-    fetchAPI(`/financings/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    }),
+  // Buscar financiamento por ID
+  get: async (id: string): Promise<Financing> => {
+    const response = await api.get(`/financings/${id}`)
+    return response.data
+  },
 
-  update: (id: string, data: any, token: string) =>
-    fetchAPI(`/financings/${id}`, {
-      method: 'PUT',
-      headers: { Authorization: `Bearer ${token}` },
-      body: JSON.stringify(data),
-    }),
+  // Criar novo financiamento
+  create: async (data: CreateFinancingDTO): Promise<Financing> => {
+    const response = await api.post('/financings', data)
+    return response.data
+  },
+
+  // Atualizar financiamento
+  update: async (id: string, data: UpdateFinancingDTO): Promise<Financing> => {
+    const response = await api.put(`/financings/${id}`, data)
+    return response.data
+  },
+
+  // Deletar financiamento
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/financings/${id}`)
+  },
 }
+
+export default api

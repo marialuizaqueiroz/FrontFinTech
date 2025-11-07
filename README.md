@@ -1,5 +1,7 @@
 # Backoffice - Financiamentos (Frontend)
 
+> 🚀 **[GUIA RÁPIDO: Como conectar com backend real →](./QUICKSTART.md)**
+
 Este repositório contém o frontend do Backoffice de Financiamentos, implementado em React + TypeScript (Vite) com MSW para mocks de API e Recharts para visualizações.
 
 ## 🎯 Principais funcionalidades

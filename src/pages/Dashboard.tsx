@@ -1,24 +1,29 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { financingAPI, Financing } from '../services/api'
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
 
-type Financing = { id: string; customer: string; amount: number; status: string; createdAt: string }
-
 export default function Dashboard() {
-  const { token, logout, user } = useAuth()
+  const { logout, user } = useAuth()
   const [items, setItems] = useState<Financing[]>([])
   const [loading, setLoading] = useState(false)
   const [viewMode, setViewMode] = useState<'count' | 'value'>('count')
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
-      const res = await fetch('/financings', { headers: { Authorization: token ? `Bearer ${token}` : '' } })
-      if (res.status === 401) { logout(); return }
-      const data = await res.json()
-      setItems(data)
-      setLoading(false)
+      setError(null)
+      try {
+        const data = await financingAPI.list()
+        setItems(data)
+      } catch (err: any) {
+        console.error('Error fetching financings:', err)
+        setError(err.response?.data?.message || 'Erro ao carregar dados')
+      } finally {
+        setLoading(false)
+      }
     }
     fetchData()
   }, [])
@@ -126,6 +131,17 @@ export default function Dashboard() {
       <div style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>Carregando...</div>
+        ) : error ? (
+          <div style={{
+            padding: '16px',
+            backgroundColor: '#fee2e2',
+            border: '1px solid #fecaca',
+            borderRadius: '8px',
+            color: '#991b1b',
+            marginBottom: '20px'
+          }}>
+            ⚠️ {error}
+          </div>
         ) : (
           <>
             {/* Cards de Resumo */}

@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import FinancingList from './pages/FinancingList'
 import FinancingDetail from './pages/FinancingDetail'
+import FinancingCreate from './pages/FinancingCreate'
 import ProtectedRoute from './components/ProtectedRoute'
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
           <Route element={<ProtectedRoute adminOnly />}> 
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/financiamentos" element={<FinancingList />} />
+            <Route path="/financiamentos/novo" element={<FinancingCreate />} />
             <Route path="/financiamentos/:id" element={<FinancingDetail />} />
           </Route>
 

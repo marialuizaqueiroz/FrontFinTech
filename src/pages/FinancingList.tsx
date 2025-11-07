@@ -1,26 +1,31 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-
-type Financing = { id: string; customer: string; amount:number; status:string; createdAt:string }
+import { financingAPI, Financing } from '../services/api'
 
 export default function FinancingList(){
-  const { token, logout, user } = useAuth()
+  const { logout, user } = useAuth()
   const [items, setItems] = useState<Financing[]>([])
   const [filteredItems, setFilteredItems] = useState<Financing[]>([])
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(()=>{
     const fetchData = async () =>{
       setLoading(true)
-      const res = await fetch('/financings', { headers: { Authorization: token ? `Bearer ${token}` : '' } })
-      if (res.status === 401) { logout(); return }
-      const data = await res.json()
-      setItems(data)
-      setFilteredItems(data)
-      setLoading(false)
+      setError(null)
+      try {
+        const data = await financingAPI.list()
+        setItems(data)
+        setFilteredItems(data)
+      } catch (err: any) {
+        console.error('Error fetching financings:', err)
+        setError(err.response?.data?.message || 'Erro ao carregar financiamentos')
+      } finally {
+        setLoading(false)
+      }
     }
     fetchData()
   },[])
@@ -119,6 +124,19 @@ export default function FinancingList(){
       </div>
 
       <div style={{padding: '24px', maxWidth: '1400px', margin: '0 auto'}}>
+        {error && (
+          <div style={{
+            padding: '16px',
+            backgroundColor: '#fee2e2',
+            border: '1px solid #fecaca',
+            borderRadius: '8px',
+            color: '#991b1b',
+            marginBottom: '20px'
+          }}>
+            ⚠️ {error}
+          </div>
+        )}
+
         {/* Filtros */}
         <div style={{
           backgroundColor: 'white',
@@ -127,6 +145,28 @@ export default function FinancingList(){
           marginBottom: '20px',
           boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
         }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '16px'
+          }}>
+            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600' }}>🔍 Filtros</h3>
+            <Link
+              to="/financiamentos/novo"
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#10b981',
+                color: 'white',
+                textDecoration: 'none',
+                borderRadius: '6px',
+                fontWeight: '500',
+                fontSize: '14px'
+              }}
+            >
+              ➕ Novo Financiamento
+            </Link>
+          </div>
           <div style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr auto',
