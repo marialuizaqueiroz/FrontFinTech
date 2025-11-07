@@ -46,13 +46,36 @@ Este repositório contém o frontend do Backoffice de Financiamentos, implementa
 
 ## 📦 Como rodar localmente
 
-1. Instale dependências:
+### 1. Instale dependências:
 
 ```bash
 npm install
 ```
 
-2. Inicie em modo desenvolvimento:
+### 2. Configure o backend:
+
+**Opção A: Usar Mock (sem backend)**
+```bash
+# Copie o arquivo de exemplo
+cp .env.example .env
+
+# O .env já vem configurado para usar mock
+# VITE_USE_MOCK=true
+```
+
+**Opção B: Conectar com backend real**
+```bash
+# Copie o arquivo de exemplo
+cp .env.example .env
+
+# Edite o .env:
+# VITE_API_URL=http://localhost:3000  (URL do seu backend)
+# VITE_USE_MOCK=false
+```
+
+📖 **Veja o guia completo:** [SETUP_BACKEND.md](./SETUP_BACKEND.md)
+
+### 3. Inicie em modo desenvolvimento:
 
 ```bash
 npm run dev
@@ -112,6 +135,23 @@ O dashboard oferece análises completas com:
 
 ## 🔗 Integração com a atividade da equipe
 
+### Modo de Operação
+
+O frontend suporta **dois modos**:
+
+1. **🎭 Mock Mode** - Usa MSW para simular APIs (desenvolvimento sem backend)
+2. **🌐 Real Backend** - Conecta com backend Node.js/Express real
+
+### Configuração Rápida
+
+```env
+# .env
+VITE_API_URL=http://localhost:3000    # URL do seu backend
+VITE_USE_MOCK=false                    # false = backend real, true = mock
+```
+
+### Endpoints Consumidos
+
 Este frontend consome os seguintes endpoints:
 
 **Autenticação (Time de Cadastro):**
@@ -123,7 +163,17 @@ Este frontend consome os seguintes endpoints:
 - `GET /financings/:id` - Detalhes de um financiamento
 - `PUT /financings/:id` - Atualiza dados do financiamento
 
-Para integração com os times reais, apenas a URL-base precisa ser ajustada e o MSW removido ou desabilitado em produção.
+Para integração com os times reais:
+
+1. **Configure as variáveis de ambiente** (veja [SETUP_BACKEND.md](./SETUP_BACKEND.md))
+2. **Implemente os endpoints** no backend (veja [BACKEND_EXAMPLE.md](./BACKEND_EXAMPLE.md))
+3. **Configure CORS** no backend para aceitar requests do frontend
+4. **Inicie ambos os servidores** (backend e frontend)
+
+### URLs Esperadas
+
+- **Desenvolvimento:** `http://localhost:3000` (backend) + `http://localhost:5173` (frontend)
+- **Produção:** Configure `VITE_API_URL` com URL do backend em produção no Vercel
 
 ## 💡 Melhorias Futuras
 
