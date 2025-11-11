@@ -405,7 +405,7 @@ export default function SalesOverview() {
               Carregando dados...
             </div>
           ) : showProducts ? (
-            <div style={{ overflowX: 'auto' }}>
+            <div className="table-wrapper responsive-table" style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#f9fafb', textAlign: 'left' }}>
@@ -419,17 +419,17 @@ export default function SalesOverview() {
                 <tbody>
                   {filteredProducts.map(product => (
                     <tr key={product.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                      <td style={{ padding: '12px', fontWeight: 600 }}>{product.sku}</td>
-                      <td style={{ padding: '12px' }}>
+                      <td data-label="SKU" style={{ padding: '12px', fontWeight: 600 }}>{product.sku}</td>
+                      <td data-label="Produto" style={{ padding: '12px' }}>
                         <div style={{ fontWeight: 600 }}>{product.name}</div>
                         <div style={{ color: '#6b7280', fontSize: '13px' }}>{product.vendor}</div>
                       </td>
-                      <td style={{ padding: '12px', textTransform: 'capitalize' }}>{product.category}</td>
-                      <td style={{ padding: '12px' }}>{currency.format(product.price)}</td>
-                      <td style={{ padding: '12px' }}>{product.stock}</td>
-                      <td style={{ padding: '12px' }}>{renderStatusBadge(product.status)}</td>
-                      <td style={{ padding: '12px' }}>{product.totalSales}</td>
-                      <td style={{ padding: '12px' }}>{product.engagementRewardPoints.toLocaleString('pt-BR')}</td>
+                      <td data-label="Categoria" style={{ padding: '12px', textTransform: 'capitalize' }}>{product.category}</td>
+                      <td data-label="Preço" style={{ padding: '12px' }}>{currency.format(product.price)}</td>
+                      <td data-label="Estoque" style={{ padding: '12px' }}>{product.stock}</td>
+                      <td data-label="Status" style={{ padding: '12px' }}>{renderStatusBadge(product.status)}</td>
+                      <td data-label="Vendas" style={{ padding: '12px' }}>{product.totalSales}</td>
+                      <td data-label="Pontos" style={{ padding: '12px' }}>{product.engagementRewardPoints.toLocaleString('pt-BR')}</td>
                     </tr>
                   ))}
                   {filteredProducts.length === 0 && (
@@ -443,7 +443,7 @@ export default function SalesOverview() {
               </table>
             </div>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
+            <div className="table-wrapper responsive-table" style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#f9fafb', textAlign: 'left' }}>
@@ -457,19 +457,19 @@ export default function SalesOverview() {
                 <tbody>
                   {filteredSales.map(sale => (
                     <tr key={sale.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                      <td style={{ padding: '12px', fontWeight: 600 }}>{sale.id}</td>
-                      <td style={{ padding: '12px' }}>
+                      <td data-label="Venda" style={{ padding: '12px', fontWeight: 600 }}>{sale.id}</td>
+                      <td data-label="Cliente" style={{ padding: '12px' }}>
                         <div style={{ fontWeight: 600 }}>{sale.customer}</div>
                         <div style={{ color: '#6b7280', fontSize: '13px' }}>{new Date(sale.saleDate).toLocaleDateString('pt-BR')}</div>
                       </td>
-                      <td style={{ padding: '12px' }}>{sale.productName}</td>
-                      <td style={{ padding: '12px', textTransform: 'capitalize' }}>
+                      <td data-label="Produto" style={{ padding: '12px' }}>{sale.productName}</td>
+                      <td data-label="Canal" style={{ padding: '12px', textTransform: 'capitalize' }}>
                         {sale.channel === 'store' ? 'Loja' : sale.channel === 'online' ? 'Online' : 'Marketplace'}
                       </td>
-                      <td style={{ padding: '12px' }}>{sale.quantity}</td>
-                      <td style={{ padding: '12px' }}>{currency.format(sale.totalValue)}</td>
-                      <td style={{ padding: '12px' }}>{renderStatusBadge(sale.status)}</td>
-                      <td style={{ padding: '12px' }}>
+                      <td data-label="Qtd" style={{ padding: '12px' }}>{sale.quantity}</td>
+                      <td data-label="Valor Total" style={{ padding: '12px' }}>{currency.format(sale.totalValue)}</td>
+                      <td data-label="Status" style={{ padding: '12px' }}>{renderStatusBadge(sale.status)}</td>
+                      <td data-label="Pontos (+/-)" style={{ padding: '12px' }}>
                         <div style={{ color: '#10b981' }}>+{sale.pointsEarned.toLocaleString('pt-BR')}</div>
                         <div style={{ color: '#ef4444' }}>-{sale.pointsUsed.toLocaleString('pt-BR')}</div>
                       </td>

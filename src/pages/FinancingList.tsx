@@ -79,9 +79,9 @@ export default function FinancingList(){
   }
 
   return (
-    <div style={{minHeight: '100vh', backgroundColor: '#f3f4f6'}}>
+    <div className="page-container" style={{minHeight: '100vh', backgroundColor: '#f3f4f6'}}>
       {/* Header */}
-      <div style={{
+      <div className="page-header" style={{
         backgroundColor: 'white',
         borderBottom: '1px solid #e5e7eb',
         padding: '16px 24px',
@@ -97,7 +97,7 @@ export default function FinancingList(){
             Olá, {user?.name} ({user?.role})
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div className="page-actions" style={{ display: 'flex', gap: '12px' }}>
           <Link
             to="/dashboard"
             style={{
@@ -185,9 +185,9 @@ export default function FinancingList(){
               ➕ Novo Financiamento
             </Link>
           </div>
-          <div style={{
+          <div className="filters-grid" style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr auto',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
             gap: '16px',
             alignItems: 'end'
           }}>
@@ -272,7 +272,7 @@ export default function FinancingList(){
         </div>
 
         {/* Resultados */}
-        <div style={{
+        <div className="table-wrapper responsive-table" style={{
           backgroundColor: 'white',
           borderRadius: '8px',
           boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
@@ -308,16 +308,16 @@ export default function FinancingList(){
                 <tbody>
                   {filteredItems.map((it, idx) => (
                     <tr key={it.id} style={{borderBottom: '1px solid #e5e7eb', backgroundColor: idx % 2 === 0 ? 'white' : '#fafafa'}}>
-                      <td style={{padding: '16px 20px', fontSize: '14px', color: '#111827', fontFamily: 'monospace'}}>{it.id}</td>
-                      <td style={{padding: '16px 20px', fontSize: '14px', color: '#111827', fontWeight: '500'}}>{it.customer}</td>
-                      <td style={{padding: '16px 20px', fontSize: '14px', color: '#111827', fontWeight: '600'}}>
+                      <td data-label="ID" style={{padding: '16px 20px', fontSize: '14px', color: '#111827', fontFamily: 'monospace'}}>{it.id}</td>
+                      <td data-label="Cliente" style={{padding: '16px 20px', fontSize: '14px', color: '#111827', fontWeight: '500'}}>{it.customer}</td>
+                      <td data-label="Valor" style={{padding: '16px 20px', fontSize: '14px', color: '#111827', fontWeight: '600'}}>
                         R$ {it.amount.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                       </td>
-                      <td style={{padding: '16px 20px'}}>{getStatusBadge(it.status)}</td>
-                      <td style={{padding: '16px 20px', fontSize: '14px', color: '#6b7280'}}>
+                      <td data-label="Status" style={{padding: '16px 20px'}}>{getStatusBadge(it.status)}</td>
+                      <td data-label="Criado em" style={{padding: '16px 20px', fontSize: '14px', color: '#6b7280'}}>
                         {new Date(it.createdAt).toLocaleDateString('pt-BR')}
                       </td>
-                      <td style={{padding: '16px 20px', textAlign: 'right'}}>
+                      <td data-label="Ações" style={{padding: '16px 20px', textAlign: 'right'}}>
                         <Link 
                           to={`/financiamentos/${it.id}`}
                           style={{

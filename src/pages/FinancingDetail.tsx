@@ -134,9 +134,9 @@ export default function FinancingDetail(){
   }
 
   return (
-    <div style={{minHeight: '100vh', backgroundColor: '#f3f4f6'}}>
+    <div className="page-container" style={{minHeight: '100vh', backgroundColor: '#f3f4f6'}}>
       {/* Header */}
-      <div style={{
+      <div className="page-header" style={{
         backgroundColor: 'white',
         borderBottom: '1px solid #e5e7eb',
         padding: '16px 24px',
@@ -152,7 +152,7 @@ export default function FinancingDetail(){
             {user?.name} ({user?.role})
           </p>
         </div>
-        <div style={{display: 'flex', gap: '12px'}}>
+        <div className="page-actions" style={{display: 'flex', gap: '12px'}}>
           <Link 
             to="/dashboard"
             style={{
@@ -237,7 +237,7 @@ export default function FinancingDetail(){
 
           {/* Formulário de Edição */}
           <div style={{padding: '24px'}}>
-            <div style={{
+            <div className="dual-grid" style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
               gap: '24px',
@@ -362,7 +362,7 @@ export default function FinancingDetail(){
               <h3 style={{margin: '0 0 16px', fontSize: '16px', fontWeight: '600', color: '#111827'}}>
                 ⚙️ Status do Financiamento
               </h3>
-              <div style={{display: 'flex', gap: '12px', alignItems: 'end', marginBottom: '16px'}}>
+              <div className="page-actions" style={{display: 'flex', gap: '12px', alignItems: 'end', marginBottom: '16px'}}>
                 <div style={{flex: 1}}>
                   <label style={{
                     display: 'block',

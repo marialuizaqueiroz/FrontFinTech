@@ -1,189 +1,88 @@
-# Backoffice - Financiamentos (Frontend)
+# Backoffice FinTech – Frontend
 
-> 🚀 **[GUIA RÁPIDO: Como conectar com backend real →](./QUICKSTART.md)**
+Interface administrativa (React + TypeScript + Vite) utilizada pelo time de Backoffice. O foco deste módulo é permitir que **usuários admin** visualizem financiamentos, produtos e vendas. Usuários **cliente** autenticados são bloqueados e redirecionados para uma tela de aviso.
 
-Este repositório contém o frontend do Backoffice de Financiamentos, implementado em React + TypeScript (Vite) com MSW para mocks de API e Recharts para visualizações.
+## Funcionalidades
 
-## 🎯 Principais funcionalidades
+- Autenticação integrada ao backend (ou MSW). Sessão persistida no `localStorage` e sincronizada via `/auth/me` quando há token.
+- Controle de acesso simples: rotas protegidas (`/dashboard`, `/financiamentos`, `/vendas`) exigem admin; `/acesso-negado` orienta clientes.
+- Navegação rápida entre Financiamentos e Vendas em todas as telas do backoffice.
+- Layouts responsivos (cards → grid fluido, tabelas com rolagem horizontal, formulários em colunas adaptáveis).
+- Suporte ao Mock Service Worker para demonstrar o módulo sem depender de outros times.
 
-### 🔐 Autenticação
-- Login (mock) — usuários `admin` e `client` (qualquer senha)
-- Rota protegida que permite apenas `admin` acessar o backoffice
-- Persistência de sessão via localStorage
+## Variáveis de ambiente
 
-### 📊 Dashboard com Gráficos (estilo Power BI)
-- **Gráfico de Pizza** - Visualização da distribuição de financiamentos por status
-- **Gráfico de Barras** - Comparação visual entre diferentes status
-- **Alternância de visualização:**
-  - 👥 Por número de clientes
-  - 💰 Por valor total em cada status
-- **Cards de Resumo:**
-  - Total de financiamentos
-  - Valor total financiado
-  - Ticket médio
-  - Taxa de aprovação
-- **Tabela detalhada** com percentuais por status
+```env
+VITE_API_URL=http://localhost:3001   # Backend do backoffice
+VITE_USE_MOCK=false                  # true ativa MSW
+```
 
-### 📋 Lista de Financiamentos
-- Campo de pesquisa - busca por cliente ou ID
-- Filtro por status (Pendente, Aprovado, Rejeitado, Assinado)
-- Badges coloridos para status
-- Contador de resultados filtrados
-- Tabela responsiva com formatação brasileira de valores
+- `VITE_USE_MOCK=true`: usa `src/mocks/handlers.ts` para simular autenticação, financiamentos, produtos e vendas.
+- `VITE_USE_MOCK=false`: consome o backend real publicado (Render/Heroku/etc). Auth e dados saem do mesmo host.
 
-### ✏️ Edição Completa de Financiamentos
-- Edição de **todos os campos** (exceto ID):
-  - Nome do cliente
-  - Valor do financiamento
-  - Prazo em meses
-  - Status
-- Validação de alterações não salvas
-- Feedback visual de salvamento
-
-### 🎨 Design Moderno
-- Interface estilo Power BI com cores profissionais
-- Layout responsivo
-- Animações e transições suaves
-- Feedback visual em tempo real
-
-## 📦 Como rodar localmente
-
-### 1. Instale dependências:
+## Como executar localmente
 
 ```bash
 npm install
+cp .env.example .env          # ajuste se necessário
+npm run dev                   # http://localhost:5173
 ```
 
-### 2. Configure o backend:
+Build para deploy:
 
-**Opção A: Usar Mock (sem backend)**
 ```bash
-# Copie o arquivo de exemplo
-cp .env.example .env
-
-# O .env já vem configurado para usar mock
-# VITE_USE_MOCK=true
+npm run build
+npm run preview
 ```
 
-**Opção B: Conectar com backend real**
+## Rotas principais
+
+| Rota                   | Descrição                                                   |
+|-----------------------|-------------------------------------------------------------|
+| `/login`              | Autenticação / fallback mockado                             |
+| `/dashboard`          | Cards + gráficos (somente admin)                            |
+| `/financiamentos`     | Lista administrativa + filtros                              |
+| `/financiamentos/:id` | Detalhe + edição                                            |
+| `/financiamentos/novo`| Cadastro rápido                                             |
+| `/vendas`             | Consolidação de produtos e vendas                           |
+| `/acesso-negado`      | Mensagem exibida ao cliente quando tenta acessar o backoffice |
+
+## Fluxo de perfis
+
+- `admin`: acesso completo após login. Caso tente abrir `/acesso-negado`, é redirecionado para `/dashboard`.
+- `client`: sempre redirecionado para `/acesso-negado`. A tela orienta a usar o portal do cliente ou pedir permissão.
+- Mock local: `admin/admin123` e `client/client123` (apenas quando o backend não responde).
+
+## Integração com o backend
+
+- Os serviços Axios estão em `src/services/api.ts`. Quando `VITE_USE_MOCK=false`, todas as rotas (`/auth/login`, `/auth/me`, `/financings`, `/products`, `/sales`) são chamadas no host configurado em `VITE_API_URL`.
+- Para demonstrar com o backend deste repositório:
+
 ```bash
-# Copie o arquivo de exemplo
-cp .env.example .env
-
-# Edite o .env:
-# VITE_API_URL=http://localhost:3000  (URL do seu backend)
-# VITE_USE_MOCK=false
-```
-
-📖 **Veja o guia completo:** [SETUP_BACKEND.md](./SETUP_BACKEND.md)
-
-### 3. Inicie em modo desenvolvimento:
-
-```bash
+# Backend
+cd ../BackFinTech
+npm install
 npm run dev
+
+# Frontend
+cd ../FrontFinTech
+VITE_API_URL=http://localhost:3001 VITE_USE_MOCK=false npm run dev
 ```
 
-Abra http://localhost:5173 (ou a porta informada pelo Vite).
+## Teste sugerido
 
-## 🔑 Credenciais de teste
+1. Levante o backend (`npm run dev`) e confirme `http://localhost:3001/api-docs`.
+2. No frontend, defina `VITE_API_URL=http://localhost:3001` e `VITE_USE_MOCK=false`.
+3. Login como `admin/admin123` → visitar `/dashboard`, `/financiamentos`, `/vendas`.
+4. Logout, login como `client/client123` → verificar redirecionamento para `/acesso-negado`.
+5. Ative `VITE_USE_MOCK=true` para apresentar o módulo sem backend.
 
-- **admin** / qualquer senha — papel `admin` (acesso ao backoffice)
-- **client** / qualquer senha — papel `client` (acesso negado ao backoffice)
+## Tecnologias
 
-## 🗂️ Estrutura de Páginas
+- React 18 + TypeScript + Vite
+- React Router DOM
+- Axios
+- Recharts
+- MSW para mocks
 
-- `/login` - Tela de autenticação
-- `/dashboard` - Dashboard com gráficos e estatísticas (página inicial após login)
-- `/financiamentos` - Lista de financiamentos com pesquisa e filtros
-- `/financiamentos/:id` - Visualização e edição completa de financiamento
-
-## 🛠️ Tecnologias Utilizadas
-
-- **React 18** - Biblioteca UI
-- **TypeScript** - Tipagem estática
-- **Vite** - Build tool e dev server
-- **React Router DOM** - Navegação
-- **Recharts** - Gráficos interativos
-- **MSW (Mock Service Worker)** - Simulação de APIs
-
-## 📊 Funcionalidades do Dashboard
-
-O dashboard oferece análises completas com:
-
-1. **Métricas principais em cards:**
-   - Total de financiamentos
-   - Valor total financiado
-   - Ticket médio por financiamento
-   - Taxa de aprovação (% aprovados + assinados)
-
-2. **Visualizações interativas:**
-   - Gráfico de pizza com percentuais
-   - Gráfico de barras para comparação
-   - Alternância entre visualização por quantidade ou valor
-
-3. **Tabela de estatísticas:**
-   - Detalhamento por status
-   - Percentual de clientes em cada status
-   - Percentual de valor em cada status
-   - Totais consolidados
-
-## 🚀 Notas sobre deploy
-
-- Frontend pode ser publicado no **Vercel**
-- Em produção, remova o MSW ou mantenha apenas para demonstração
-- Configure as variáveis de ambiente para apontar aos backends reais:
-  - Serviço de Cadastro para autenticação (`/auth/*`)
-  - Serviço de Financiamento para dados (`/financings*`)
-
-## 🔗 Integração com a atividade da equipe
-
-### Modo de Operação
-
-O frontend suporta **dois modos**:
-
-1. **🎭 Mock Mode** - Usa MSW para simular APIs (desenvolvimento sem backend)
-2. **🌐 Real Backend** - Conecta com backend Node.js/Express real
-
-### Configuração Rápida
-
-```env
-# .env
-VITE_API_URL=http://localhost:3000    # URL do seu backend
-VITE_USE_MOCK=false                    # false = backend real, true = mock
-```
-
-### Endpoints Consumidos
-
-Este frontend consome os seguintes endpoints:
-
-**Autenticação (Time de Cadastro):**
-- `POST /auth/login` - Login de usuário
-- `GET /auth/me` - Validação de token
-
-**Financiamentos:**
-- `GET /financings` - Lista todos os financiamentos
-- `GET /financings/:id` - Detalhes de um financiamento
-- `PUT /financings/:id` - Atualiza dados do financiamento
-
-Para integração com os times reais:
-
-1. **Configure as variáveis de ambiente** (veja [SETUP_BACKEND.md](./SETUP_BACKEND.md))
-2. **Implemente os endpoints** no backend (veja [BACKEND_EXAMPLE.md](./BACKEND_EXAMPLE.md))
-3. **Configure CORS** no backend para aceitar requests do frontend
-4. **Inicie ambos os servidores** (backend e frontend)
-
-### URLs Esperadas
-
-- **Desenvolvimento:** `http://localhost:3000` (backend) + `http://localhost:5173` (frontend)
-- **Produção:** Configure `VITE_API_URL` com URL do backend em produção no Vercel
-
-## 💡 Melhorias Futuras
-
-- Paginação com lazy loading
-- Exportação de relatórios (PDF/Excel)
-- Timeline do financiamento com histórico de alterações
-- Upload de documentos
-- Notificações em tempo real
-- Filtros avançados (data, valor min/max)
-- Gráficos de tendência temporal
-- Integração com envio de e-mail ao assinar contrato
+> Banco de dados/integrações externas não fazem parte do escopo deste time; usamos o backend do grupo (com mock habilitado) ou o MSW para simulações.

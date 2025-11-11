@@ -7,6 +7,7 @@ import FinancingList from './pages/FinancingList'
 import FinancingDetail from './pages/FinancingDetail'
 import FinancingCreate from './pages/FinancingCreate'
 import SalesOverview from './pages/SalesOverview'
+import AccessDenied from './pages/AccessDenied'
 import ProtectedRoute from './components/ProtectedRoute'
 
 export default function App() {
@@ -25,6 +26,7 @@ export default function App() {
             <Route path="/vendas" element={<SalesOverview />} />
           </Route>
 
+          <Route path="/acesso-negado" element={<AccessDenied />} />
           <Route path="*" element={<div style={{padding:20}}>Página não encontrada. <a href="/">Ir para Início</a></div>} />
         </Routes>
       </AuthProvider>
