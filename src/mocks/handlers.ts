@@ -27,7 +27,7 @@ const sales = [
 
 export const handlers = [
   // auth login
-  rest.post('/auth/login', async (req, res, ctx) => {
+  rest.post('/api/auth/login', async (req, res, ctx) => {
     const body = await req.json()
     const username = body.username || ''
     const role = username === 'admin' ? 'admin' : 'client'
@@ -37,7 +37,7 @@ export const handlers = [
   }),
 
   // validate token
-  rest.get('/auth/me', (req, res, ctx) => {
+  rest.get('/api/auth/me', (req, res, ctx) => {
     const auth = req.headers.get('authorization') || ''
     if (!auth.startsWith('Bearer mock-token-')) return res(ctx.status(401))
     const role = auth.includes('admin') ? 'admin' : 'client'
@@ -45,7 +45,7 @@ export const handlers = [
   }),
 
   // financings list
-  rest.get('/financings', (req, res, ctx) => {
+  rest.get('/api/financings', (req, res, ctx) => {
     const auth = req.headers.get('authorization') || ''
     if (!auth.startsWith('Bearer mock-token-')) return res(ctx.status(401))
     // only admins allowed to access backoffice
@@ -53,7 +53,7 @@ export const handlers = [
     return res(ctx.status(200), ctx.json(financings))
   }),
 
-  rest.get('/financings/:id', (req, res, ctx) => {
+  rest.get('/api/financings/:id', (req, res, ctx) => {
     const { id } = req.params
     const auth = req.headers.get('authorization') || ''
     if (!auth.startsWith('Bearer mock-token-')) return res(ctx.status(401))
@@ -63,7 +63,7 @@ export const handlers = [
     return res(ctx.status(200), ctx.json(f))
   }),
 
-  rest.put('/financings/:id', async (req, res, ctx) => {
+  rest.put('/api/financings/:id', async (req, res, ctx) => {
     const { id } = req.params
     const auth = req.headers.get('authorization') || ''
     if (!auth.startsWith('Bearer mock-token-')) return res(ctx.status(401))
@@ -85,14 +85,14 @@ export const handlers = [
   }),
 
   // products
-  rest.get('/products', (req, res, ctx) => {
+  rest.get('/api/products', (req, res, ctx) => {
     const auth = req.headers.get('authorization') || ''
     if (!auth.startsWith('Bearer mock-token-')) return res(ctx.status(401))
     if (auth.includes('client')) return res(ctx.status(403), ctx.json({ message: 'Forbidden' }))
     return res(ctx.status(200), ctx.json(products))
   }),
 
-  rest.get('/products/:id', (req, res, ctx) => {
+  rest.get('/api/products/:id', (req, res, ctx) => {
     const auth = req.headers.get('authorization') || ''
     if (!auth.startsWith('Bearer mock-token-')) return res(ctx.status(401))
     if (auth.includes('client')) return res(ctx.status(403), ctx.json({ message: 'Forbidden' }))
@@ -102,14 +102,14 @@ export const handlers = [
   }),
 
   // sales
-  rest.get('/sales', (req, res, ctx) => {
+  rest.get('/api/sales', (req, res, ctx) => {
     const auth = req.headers.get('authorization') || ''
     if (!auth.startsWith('Bearer mock-token-')) return res(ctx.status(401))
     if (auth.includes('client')) return res(ctx.status(403), ctx.json({ message: 'Forbidden' }))
     return res(ctx.status(200), ctx.json(sales))
   }),
 
-  rest.get('/sales/:id', (req, res, ctx) => {
+  rest.get('/api/sales/:id', (req, res, ctx) => {
     const auth = req.headers.get('authorization') || ''
     if (!auth.startsWith('Bearer mock-token-')) return res(ctx.status(401))
     if (auth.includes('client')) return res(ctx.status(403), ctx.json({ message: 'Forbidden' }))

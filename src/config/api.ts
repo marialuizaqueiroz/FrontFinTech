@@ -1,13 +1,9 @@
 // src/config/api.ts
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'
 
-// Define se deve usar mocks
-const USE_MOCK =
-  import.meta.env.VITE_USE_MOCK === 'true' ||
-  import.meta.env.PROD; // ativa mock automaticamente na Vercel
-
-// Define a URL base da API
+// Quando mock estiver ativo, API_URL será "/api"
 const API_URL = USE_MOCK
-  ? '/api' // interceptado pelo MSW
-  : import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  ? '/api'
+  : import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
-export { API_URL, USE_MOCK };
+export { API_URL, USE_MOCK }
