@@ -80,9 +80,9 @@ export default function Dashboard() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
+    <div className="page-container" style={{ minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
       {/* Header */}
-      <div style={{
+      <div className="page-header" style={{
         backgroundColor: 'white',
         borderBottom: '1px solid #e5e7eb',
         padding: '16px 24px',
@@ -98,7 +98,7 @@ export default function Dashboard() {
             {user?.name} ({user?.role})
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div className="page-actions" style={{ display: 'flex', gap: '12px' }}>
           <Link
             to="/financiamentos"
             style={{
@@ -111,6 +111,19 @@ export default function Dashboard() {
             }}
           >
             📋 Lista
+          </Link>
+          <Link
+            to="/vendas"
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#10b981',
+              color: 'white',
+              textDecoration: 'none',
+              borderRadius: '6px',
+              fontWeight: '500'
+            }}
+          >
+            Vendas & Produtos
           </Link>
           <button
             onClick={logout}
@@ -146,7 +159,7 @@ export default function Dashboard() {
         ) : (
           <>
             {/* Cards de Resumo */}
-            <div style={{
+            <div className="cards-grid" style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
               gap: '20px',
@@ -252,7 +265,7 @@ export default function Dashboard() {
             </div>
 
             {/* Gráficos */}
-            <div style={{
+            <div className="section-flex" style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))',
               gap: '20px'
@@ -330,7 +343,7 @@ export default function Dashboard() {
             </div>
 
             {/* Tabela de Estatísticas */}
-            <div style={{
+            <div className="table-wrapper responsive-table" style={{
               backgroundColor: 'white',
               borderRadius: '12px',
               boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
@@ -355,7 +368,7 @@ export default function Dashboard() {
                 <tbody>
                   {chartData.map((stat, idx) => (
                     <tr key={stat.name} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                      <td style={{ padding: '16px 20px' }}>
+                      <td data-label="Status" style={{ padding: '16px 20px' }}>
                         <span style={{
                           backgroundColor: stat.color,
                           color: 'white',
@@ -367,16 +380,16 @@ export default function Dashboard() {
                           {stat.name}
                         </span>
                       </td>
-                      <td style={{ textAlign: 'right', padding: '16px 20px', fontSize: '16px', fontWeight: '600' }}>
+                      <td data-label="Quantidade" style={{ textAlign: 'right', padding: '16px 20px', fontSize: '16px', fontWeight: '600' }}>
                         {stat.count}
                       </td>
-                      <td style={{ textAlign: 'right', padding: '16px 20px', color: '#6b7280' }}>
+                      <td data-label="% Clientes" style={{ textAlign: 'right', padding: '16px 20px', color: '#6b7280' }}>
                         {((stat.count / totalCount) * 100).toFixed(1)}%
                       </td>
-                      <td style={{ textAlign: 'right', padding: '16px 20px', fontSize: '16px', fontWeight: '600', color: '#059669' }}>
+                      <td data-label="Valor Total" style={{ textAlign: 'right', padding: '16px 20px', fontSize: '16px', fontWeight: '600', color: '#059669' }}>
                         R$ {stat.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </td>
-                      <td style={{ textAlign: 'right', padding: '16px 20px', color: '#6b7280' }}>
+                      <td data-label="% Valor" style={{ textAlign: 'right', padding: '16px 20px', color: '#6b7280' }}>
                         {((stat.value / totalValue) * 100).toFixed(1)}%
                       </td>
                     </tr>
@@ -384,13 +397,13 @@ export default function Dashboard() {
                 </tbody>
                 <tfoot style={{ backgroundColor: '#f9fafb', fontWeight: '700' }}>
                   <tr>
-                    <td style={{ padding: '16px 20px', fontSize: '14px' }}>TOTAL</td>
-                    <td style={{ textAlign: 'right', padding: '16px 20px', fontSize: '18px' }}>{totalCount}</td>
-                    <td style={{ textAlign: 'right', padding: '16px 20px' }}>100%</td>
-                    <td style={{ textAlign: 'right', padding: '16px 20px', fontSize: '18px', color: '#059669' }}>
+                    <td data-label="Status" style={{ padding: '16px 20px', fontSize: '14px' }}>TOTAL</td>
+                    <td data-label="Quantidade" style={{ textAlign: 'right', padding: '16px 20px', fontSize: '18px' }}>{totalCount}</td>
+                    <td data-label="% Clientes" style={{ textAlign: 'right', padding: '16px 20px' }}>100%</td>
+                    <td data-label="Valor Total" style={{ textAlign: 'right', padding: '16px 20px', fontSize: '18px', color: '#059669' }}>
                       R$ {totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </td>
-                    <td style={{ textAlign: 'right', padding: '16px 20px' }}>100%</td>
+                    <td data-label="% Valor" style={{ textAlign: 'right', padding: '16px 20px' }}>100%</td>
                   </tr>
                 </tfoot>
               </table>

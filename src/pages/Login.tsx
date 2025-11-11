@@ -22,14 +22,14 @@ export default function Login(){
   }
 
   return (
-    <div style={{
+    <div className="auth-wrapper" style={{
       minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: '#f3f4f6'
     }}>
-      <div style={{
+      <div className="auth-card" style={{
         maxWidth: 440,
         width: '100%',
         margin: '20px',

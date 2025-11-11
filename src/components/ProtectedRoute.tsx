@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext'
 const ProtectedRoute: React.FC<{ adminOnly?: boolean }> = ({ adminOnly = false }) => {
   const { token, user } = useAuth()
   if (!token) return <Navigate to="/login" replace />
-  if (adminOnly && user?.role !== 'admin') return <Navigate to="/" replace />
+  if (adminOnly && user?.role !== 'admin') return <Navigate to="/acesso-negado" replace />
   return <Outlet />
 }
 

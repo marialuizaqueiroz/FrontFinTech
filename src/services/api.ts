@@ -57,6 +57,76 @@ export interface UpdateFinancingDTO {
   termMonths?: number
 }
 
+export interface Product {
+  id: string
+  name: string
+  category: string
+  sku: string
+  status: 'available' | 'out_of_stock' | 'inactive'
+  price: number
+  stock: number
+  vendor?: string
+  description?: string
+  imageUrl?: string
+  engagementRewardPoints: number
+  lastSaleDate?: string
+  totalSales: number
+}
+
+export interface CreateProductDTO {
+  name: string
+  category: string
+  sku: string
+  status?: 'available' | 'out_of_stock' | 'inactive'
+  price: number
+  stock: number
+  vendor?: string
+  description?: string
+  imageUrl?: string
+  engagementRewardPoints?: number
+}
+
+export interface UpdateProductDTO extends Partial<CreateProductDTO> {
+  totalSales?: number
+  lastSaleDate?: string
+}
+
+export interface Sale {
+  id: string
+  productId: string
+  productName: string
+  customer: string
+  channel: 'online' | 'store' | 'marketplace'
+  quantity: number
+  unitPrice: number
+  discountPercent: number
+  status: 'processing' | 'paid' | 'shipped' | 'delivered' | 'cancelled' | 'refunded'
+  pointsEarned: number
+  pointsUsed: number
+  engagementStatus: 'pending' | 'synced' | 'error'
+  saleDate: string
+  totalValue: number
+}
+
+export interface CreateSaleDTO {
+  productId: string
+  productName: string
+  customer: string
+  channel?: 'online' | 'store' | 'marketplace'
+  quantity: number
+  unitPrice: number
+  discountPercent?: number
+  status?: 'processing' | 'paid' | 'shipped' | 'delivered' | 'cancelled' | 'refunded'
+  pointsEarned?: number
+  pointsUsed?: number
+  engagementStatus?: 'pending' | 'synced' | 'error'
+  saleDate?: string
+}
+
+export interface UpdateSaleDTO extends Partial<CreateSaleDTO> {
+  totalValue?: number
+}
+
 // Auth Service
 export const authAPI = {
   login: async (username: string, password: string) => {
@@ -99,6 +169,50 @@ export const financingAPI = {
   // Deletar financiamento
   delete: async (id: string): Promise<void> => {
     await api.delete(`/financings/${id}`)
+  },
+}
+
+export const productAPI = {
+  list: async (): Promise<Product[]> => {
+    const response = await api.get('/products')
+    return response.data
+  },
+  get: async (id: string): Promise<Product> => {
+    const response = await api.get(`/products/${id}`)
+    return response.data
+  },
+  create: async (data: CreateProductDTO): Promise<Product> => {
+    const response = await api.post('/products', data)
+    return response.data
+  },
+  update: async (id: string, data: UpdateProductDTO): Promise<Product> => {
+    const response = await api.put(`/products/${id}`, data)
+    return response.data
+  },
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/products/${id}`)
+  },
+}
+
+export const saleAPI = {
+  list: async (): Promise<Sale[]> => {
+    const response = await api.get('/sales')
+    return response.data
+  },
+  get: async (id: string): Promise<Sale> => {
+    const response = await api.get(`/sales/${id}`)
+    return response.data
+  },
+  create: async (data: CreateSaleDTO): Promise<Sale> => {
+    const response = await api.post('/sales', data)
+    return response.data
+  },
+  update: async (id: string, data: UpdateSaleDTO): Promise<Sale> => {
+    const response = await api.put(`/sales/${id}`, data)
+    return response.data
+  },
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/sales/${id}`)
   },
 }
 

@@ -55,9 +55,9 @@ export default function FinancingCreate() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
+    <div className="page-container" style={{ minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
       {/* Header */}
-      <div style={{
+      <div className="page-header" style={{
         backgroundColor: 'white',
         borderBottom: '1px solid #e5e7eb',
         padding: '16px 24px',
@@ -73,7 +73,7 @@ export default function FinancingCreate() {
             {user?.name} ({user?.role})
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div className="page-actions" style={{ display: 'flex', gap: '12px' }}>
           <Link
             to="/dashboard"
             style={{
@@ -149,7 +149,7 @@ export default function FinancingCreate() {
               </div>
             )}
 
-            <div style={{
+            <div className="form-grid" style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
               gap: '24px',
